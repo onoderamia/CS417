@@ -1,12 +1,23 @@
 using UnityEngine;
+using UnityEngine.XR;
 
 public class Quit : MonoBehaviour
 {
+    bool lastPress = false;
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.JoystickButton1) || Input.GetKeyDown(KeyCode.B)) 
+        InputDevice rightHand =
+            InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+
+        if (rightHand.TryGetFeatureValue(CommonUsages.secondaryButton, out bool pressed))
         {
-            Application.Quit();
+            if (pressed && !lastPress)
+            {
+                Application.Quit();
+            }
+
+            lastPress = pressed;
         }
     }
 }

@@ -1,31 +1,43 @@
 using UnityEngine;
+using UnityEngine.XR;
 
 public class BreakOutSimple : MonoBehaviour
 {
     public Transform SpawnPoint;
     public Transform OutsidePoint;
-    public Transform CameraOffset; 
-
+    public Transform CameraOffset;
 
     private bool isOutside = false;
+    private bool lastPress = false;
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKeyDown(KeyCode.A))
-        {
-            isOutside = !isOutside;
+        InputDevice leftHand = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
 
-            if (isOutside) 
+        if (leftHand.TryGetFeatureValue(CommonUsages.secondaryButton, out bool pressed))
+        {
+            if (pressed && !lastPress)
             {
-                transform.position = OutsidePoint.position;
-                CameraOffset.localRotation = Quaternion.Euler(40f, 0f, 0f);
+                Toggle();
             }
-            else
-            {
-                transform.position = SpawnPoint.position;
-                CameraOffset.localRotation = Quaternion.Euler(0f, 0f, 0f);
-            }
+
+            lastPress = pressed;
+        }
+    }
+
+    void Toggle()
+    {
+        isOutside = !isOutside;
+
+        if (isOutside)
+        {
+            transform.position = OutsidePoint.position;
+            CameraOffset.localRotation = Quaternion.Euler(40f, 0f, 0f);
+        }
+        else
+        {
+            transform.position = SpawnPoint.position;
+            CameraOffset.localRotation = Quaternion.Euler(0f, 0f, 0f);
         }
     }
 }
-

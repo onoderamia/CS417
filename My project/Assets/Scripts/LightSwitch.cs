@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.XR;
 
 public class LightSwitch : MonoBehaviour
 {
     Light pointLight;
     bool isWhite = true;
+    bool lastPress = false;
 
     void Start()
     {
@@ -12,18 +14,31 @@ public class LightSwitch : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.JoystickButton3) || Input.GetKeyDown(KeyCode.Tab))
+        InputDevice leftHand =
+            InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+
+        if (leftHand.TryGetFeatureValue(CommonUsages.primaryButton, out bool pressed))
         {
-            if(isWhite) 
+            if (pressed && !lastPress)
             {
-                pointLight.color = Color.skyBlue;
-                isWhite = false;
+                ToggleLight();
             }
-            else 
-            {
-                pointLight.color = Color.white;
-                isWhite = true;
-            }
+
+            lastPress = pressed;
+        }
+    }
+
+    void ToggleLight()
+    {
+        if (isWhite)
+        {
+            pointLight.color = Color.red;
+            isWhite = false;
+        }
+        else
+        {
+            pointLight.color = Color.white;
+            isWhite = true;
         }
     }
 }
